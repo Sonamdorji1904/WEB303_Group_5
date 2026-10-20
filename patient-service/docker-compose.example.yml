@@ -1,0 +1,62 @@
+# Standalone example, or copy these patient-owned services into your team compose.
+# From patient-service/: docker compose -f docker-compose.example.yml up --build
+# When merging at repository root, change build context to ./patient-service and
+# migration mount to ./patient-service/migrations. Reuse the team's RabbitMQ host,
+# credentials and network; omit the local rabbitmq block in that case.
+services:
+  patient-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: patient
+      POSTGRES_PASSWORD: ${PATIENT_DB_PASSWORD:-patient_local}
+      POSTGRES_DB: patient_db
+    ports:
+      - "127.0.0.1:${PATIENT_DB_PORT:-55433}:5432"
+    volumes:
+      - patient-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U patient -d patient_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  patient-migrate:
+    image: postgres:17-alpine
+    depends_on:
+      patient-db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${PATIENT_DB_PASSWORD:-patient_local}
+    volumes:
+      - ./migrations:/migrations:ro
+    entrypoint: ["psql", "-h", "patient-db", "-U", "patient", "-d", "patient_db", "-v", "ON_ERROR_STOP=1", "--single-transaction", "-f", "/migrations/001_init.sql"]
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+    volumes:
+      - patient-rabbit-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  patient-service:
+    build:
+      context: .
+    environment:
+      DATABASE_URL: postgres://patient:${PATIENT_DB_PASSWORD:-patient_local}@patient-db:5432/patient_db?sslmode=disable
+      RABBITMQ_URL: ${PATIENT_RABBITMQ_URL:-amqp://guest:guest@rabbitmq:5672/}
+      HTTP_ADDR: :8081
+    ports:
+      - "127.0.0.1:8081:8081"
+    depends_on:
+      patient-migrate:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    stop_grace_period: 30s
+volumes:
+  patient-data:
+  patient-rabbit-data:

@@ -1,0 +1,15 @@
+{
+  "eventId": "bdf2f445-6c74-41ea-b592-7b9669002b38",
+  "eventType": "AppointmentCompleted",
+  "timestamp": "2026-10-20T00:00:00Z",
+  "data": {
+    "appointmentId": "be54f677-d79c-4ab5-b821-f5bd5bc807f3",
+    "patientId": "f29997d5-2f33-450e-8fce-11560893d297",
+    "patientName": "Example Patient",
+    "doctorId": "ac875bc5-de62-4497-95e4-b2f51a45d971",
+    "doctorName": "Example Doctor",
+    "visitDate": "2026-10-19T10:00:00Z",
+    "diagnosis": "Example of diagnosis for local testing",
+    "prescription": "Example of lprescription for local testing"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "eventId": "33ce1c71-a062-4aa7-b0b8-9f001175d6eb",
+  "eventType": "MedicalRecordCreated",
+  "timestamp": "2026-10-20T00:00:00Z",
+  "data": {
+    "recordId": "dd8f6f03-f8ad-461d-83b6-e07bfd77dd5b",
+    "appointmentId": "ebc4feb1-eb27-47b0-bb90-583bb4db3c3b",
+    "patientId": "51478d15-98d4-4ea3-ad53-58a12e8b98aa",
+    "patientName": "Example Patient",
+    "doctorId": "ac875bc5-de62-4497-95e4-b2f51a45d971",
+    "doctorName": "Example Doctor",
+    "visitDate": "2026-10-19T10:00:00Z",
+    "phone": "+97500000000",
+    "email": "example@example.com"
+  }
+}
