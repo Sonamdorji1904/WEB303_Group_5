@@ -1,3 +1,0 @@
-(()=>{"use strict";module.exports=[6961,a=>{var b=a.i(87924),c=a.i(74515);a.s(["RoleLayout",0,function({role:a,children:d}){return(0,b.jsx)(c.W,{role:a,children:d})}])},74515,a=>{var b=a.i(87924),c=a.i(51335),d=a.i(50944),e=a.i(72131);function f(a){return"PATIENT"===a?"/patient/doctors":"DOCTOR"===a?"/doctor/requests":"/admin"}a.s(["W",0,function({role:a,children:g}){let{identity:h,ready:i}=(0,c.useAuth)(),j=(0,d.useRouter)();return((0,e.useEffect)(()=>{i&&(h?h.role!==a&&j.replace(f(h.role)):j.replace("/"))},[h,i,a,j]),i&&h&&h.role===a)?(0,b.jsx)(b.Fragment,{children:g}):(0,b.jsx)("div",{className:"grid min-h-[60vh] place-items-center text-sm text-slate-400",children:"Checking access..."})},"_",0,f])}]})();
-
-//# sourceMappingURL=_1j9rjk8if81jk._.js.map

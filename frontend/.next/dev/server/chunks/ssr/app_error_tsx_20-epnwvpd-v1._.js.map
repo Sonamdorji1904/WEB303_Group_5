@@ -1,6 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///Users/sonamdorji/WEB303_Group_5/frontend/app/error.tsx"],"sourcesContent":["\"use client\";\nexport default function Error({ reset }: { reset: () => void }) {\n  return <div className=\"card mx-auto mt-12 max-w-lg p-8 text-center\"><h2 className=\"text-xl font-bold\">Something went wrong</h2><p className=\"mt-2 text-sm text-slate-500\">Please try the page again.</p><button className=\"btn-primary mt-5\" onClick={reset}>Try again</button></div>;\n}\n"],"names":["Error","reset","className","onClick"],"mappings":";;;;;AAAA;;AACe,SAASA,MAAM,EAAEC,KAAK,EAAyB;IAC5D,qBAAO,8OAAC;QAAIC,WAAU;;0BAA8C,8OAAC;gBAAGA,WAAU;0BAAoB;;;;;;0BAAyB,8OAAC;gBAAEA,WAAU;0BAA8B;;;;;;0BAA8B,8OAAC;gBAAOA,WAAU;gBAAmBC,SAASF;0BAAO;;;;;;;;;;;;AAC/P"}}]
-}

@@ -1,3 +1,0 @@
-module.exports=[74515,a=>{"use strict";var b=a.i(87924),c=a.i(51335),d=a.i(50944),e=a.i(72131);function f(a){return"PATIENT"===a?"/patient/doctors":"DOCTOR"===a?"/doctor/requests":"/admin"}a.s(["W",0,function({role:a,children:g}){let{identity:h,ready:i}=(0,c.useAuth)(),j=(0,d.useRouter)();return((0,e.useEffect)(()=>{i&&(h?h.role!==a&&j.replace(f(h.role)):j.replace("/"))},[h,i,a,j]),i&&h&&h.role===a)?(0,b.jsx)(b.Fragment,{children:g}):(0,b.jsx)("div",{className:"grid min-h-[60vh] place-items-center text-sm text-slate-400",children:"Checking access..."})},"_",0,f])}];
-
-//# sourceMappingURL=components_RoleGuard_tsx_1uq_h_r4hafha._.js.map

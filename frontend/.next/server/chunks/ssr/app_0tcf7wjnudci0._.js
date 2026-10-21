@@ -1,3 +1,0 @@
-module.exports=[[93201,a=>{let b=(0,a.i(11857).registerClientReference)(function(){throw Error("Attempted to call RoleLayout() from the server but RoleLayout is on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.")},"[project]/app/RoleLayout.tsx","RoleLayout");a.s(["RoleLayout",0,b])},71599,a=>{var b=a.i(93201);a.n(b)},26435,a=>{var b=a.i(7997),c=a.i(71599);a.s(["default",0,function({children:a}){return(0,b.jsx)(c.RoleLayout,{role:"ADMIN",children:a})}])}],67971,function(a){a.n(a.i(26435))}];
-
-//# sourceMappingURL=app_0tcf7wjnudci0._.js.map

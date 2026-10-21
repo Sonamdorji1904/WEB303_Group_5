@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../app/loading.tsx"],"sourcesContent":["export default function Loading() {\n  return <div className=\"flex min-h-[60vh] items-center justify-center text-sm text-slate-500\">Loading your care dashboard…</div>;\n}\n"],"names":["Loading","className"],"mappings":"wEAAe,SAASA,EACtB,MAAO,CAAA,EAAA,EAAA,GAAA,EAAC,MAAA,CAAIC,UAAU,gFAAuE,gCAC/F"}
