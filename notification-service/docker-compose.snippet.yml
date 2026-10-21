@@ -1,0 +1,38 @@
+# Paste these into the root hospital-system/docker-compose.yml
+# (SD owns that file). Assumes the shared `rabbitmq` service is defined there
+# with a healthcheck, and the build context is ./notification-service.
+
+  notification-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: notification
+      POSTGRES_PASSWORD: notification
+      POSTGRES_DB: notification_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - notification-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notification -d notification_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  notification-service:
+    build: ./notification-service
+    environment:
+      PORT: "8084"
+      DATABASE_URL: postgres://notification:notification@notification-db:5432/notification_db?sslmode=disable
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      CORS_ORIGIN: "*"
+    ports:
+      - "8084:8084"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      notification-db:
+        condition: service_healthy
+    restart: unless-stopped
+
+# and under the top-level `volumes:` key:
+#   notification-db-data:
