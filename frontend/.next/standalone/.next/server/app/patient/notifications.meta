@@ -1,0 +1,39 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/patient/layout,_N_T_/patient/notifications/layout,_N_T_/patient/notifications/page,_N_T_/patient/notifications"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/patient/notifications/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/7cbfee541cb0065ff13dcaabb273fc2fff49e760f48b0bf547949a18a9594cd3/$/patient/notifications",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/patient/notifications/page"
+    },
+    "isFallback": false
+  }
+}

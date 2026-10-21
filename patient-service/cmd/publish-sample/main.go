@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"hospital/patient-service/internal/service"
@@ -16,16 +17,24 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Publish failed; check file, event validation and broker connectivity")
 		os.Exit(1)
 	}
-	fmt.Println("AppointmentCompleted confirmed by RabbitMQ")
+	fmt.Println("Event confirmed by RabbitMQ")
 }
 func run(path string) error {
 	body, e := os.ReadFile(path)
 	if e != nil {
 		return e
 	}
-	event, _, e := service.ParseAppointment(body)
-	if e != nil {
+	var event service.Event
+	if e = json.Unmarshal(body, &event); e != nil {
 		return e
+	}
+	if event.EventType == "AppointmentCompleted" {
+		event, _, e = service.ParseAppointment(body)
+		if e != nil {
+			return e
+		}
+	} else if event.EventType != "PatientRegistered" || event.EventID == "" || event.Timestamp.IsZero() || len(event.Data) == 0 {
+		return fmt.Errorf("unsupported or invalid sample event")
 	}
 	url := os.Getenv("RABBITMQ_URL")
 	if url == "" {

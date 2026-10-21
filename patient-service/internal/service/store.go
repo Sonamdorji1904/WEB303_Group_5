@@ -52,7 +52,7 @@ func (s *Store) Register(ctx context.Context, in PatientInput) (Patient, error) 
 	if err != nil {
 		return p, err
 	}
-	err = enqueue(ctx, tx, newEvent("PatientRegistered", map[string]any{"patientId": p.ID, "patientName": p.Name, "phone": p.Phone, "email": p.Email}))
+	err = enqueue(ctx, tx, newEvent("PatientRegistered", map[string]any{"patientId": p.ID, "patientName": p.Name, "phone": p.Phone, "patientEmail": p.Email}))
 	if err != nil {
 		return p, err
 	}
@@ -141,7 +141,7 @@ func (s *Store) Process(ctx context.Context, body []byte) error {
 		return err
 	}
 	if tag.RowsAffected() == 1 {
-		err = enqueue(ctx, tx, newEvent("MedicalRecordCreated", map[string]any{"recordId": id, "appointmentId": a.AppointmentID, "patientId": p.ID, "patientName": p.Name, "doctorId": a.DoctorID, "doctorName": a.DoctorName, "visitDate": a.VisitDate.UTC(), "phone": p.Phone, "email": p.Email}))
+		err = enqueue(ctx, tx, newEvent("MedicalRecordCreated", map[string]any{"recordId": id, "appointmentId": a.AppointmentID, "patientId": p.ID, "patientName": p.Name, "doctorId": a.DoctorID, "doctorName": a.DoctorName, "visitDate": a.VisitDate.UTC(), "phone": p.Phone, "patientEmail": p.Email}))
 		if err != nil {
 			return err
 		}

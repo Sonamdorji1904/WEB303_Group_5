@@ -46,7 +46,7 @@ func run() error {
 		wg.Add(1)
 		go func(f func(context.Context, *service.Store, string)) { defer wg.Done(); f(ctx, s, url) }(worker)
 	}
-	server := &http.Server{Addr: env("HTTP_ADDR", ":8081"), Handler: s.Handler(), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 15 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 16384}
+	server := &http.Server{Addr: env("HTTP_ADDR", ":8081"), Handler: s.Handler(env("CORS_ORIGIN", "*")), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 15 * time.Second, IdleTimeout: 60 * time.Second, MaxHeaderBytes: 16384}
 	done := make(chan error, 1)
 	go func() { done <- server.ListenAndServe() }()
 	slog.Info("patient service listening", "address", server.Addr)

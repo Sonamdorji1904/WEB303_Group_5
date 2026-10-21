@@ -1,0 +1,39 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/appointments/layout,_N_T_/admin/appointments/page,_N_T_/admin/appointments"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/admin/appointments/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/539062bb43f685e51f7c42cfbcb5147a051c73e59af19dd516efc2d0b109afa5/$/admin/appointments",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/admin/appointments/page"
+    },
+    "isFallback": false
+  }
+}

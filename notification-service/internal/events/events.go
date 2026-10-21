@@ -12,6 +12,8 @@ import (
 const (
 	PatientRegistered    = "PatientRegistered"
 	AppointmentRequested = "AppointmentRequested"
+	SlotReserved         = "SlotReserved"
+	SlotRejected         = "SlotRejected"
 	AppointmentConfirmed = "AppointmentConfirmed"
 	AppointmentRejected  = "AppointmentRejected"
 	AppointmentCompleted = "AppointmentCompleted"
@@ -21,12 +23,12 @@ const (
 // BindingKeys are the routing keys the Notification Service binds to on the
 // topic exchange.
 var BindingKeys = []string{
-	"patient.registered",
-	"appointment.requested",
-	"appointment.confirmed",
-	"appointment.rejected",
-	"appointment.completed",
-	"medical_record.created",
+	PatientRegistered,
+	AppointmentRequested,
+	AppointmentConfirmed,
+	AppointmentRejected,
+	AppointmentCompleted,
+	MedicalRecordCreated,
 }
 
 // Envelope is the common wrapper around every event.

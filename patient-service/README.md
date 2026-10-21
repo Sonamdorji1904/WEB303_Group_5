@@ -40,6 +40,7 @@ Migration 001 creates only this service's tables and indexes. It is repeatable, 
 | `DATABASE_URL` | `postgres://patient:patient_local@localhost:55433/patient_db?sslmode=disable` | Patient-owned PostgreSQL database |
 | `RABBITMQ_URL` | `amqp://guest:guest@localhost:5672/` | Shared broker/vhost |
 | `HTTP_ADDR` | `:8081` | HTTP listener |
+| `CORS_ORIGIN` | `*` | Allowed browser origin, e.g. `http://localhost:3000` |
 | `TEST_DATABASE_URL` | unset | Disposable test DB; tests create and drop isolated schemas |
 | `TEST_RABBITMQ_URL` | unset | Dedicated disposable broker vhost; live tests purge patient queues |
 
@@ -89,9 +90,13 @@ Declare/use durable topic exchange **`hospital.events`**. Routing keys equal the
 
 | Producer → consumer | Routing key | Required data |
 | --- | --- | --- |
-| Patient → Notification/others | `PatientRegistered` | `patientId`, `patientName`, `phone`, `email` |
+| Patient → Notification/others | `PatientRegistered` | `patientId`, `patientName`, `phone`, `patientEmail` |
 | Appointment → Patient | `AppointmentCompleted` | `appointmentId`, `patientId`, `patientName`, `doctorId`, `doctorName`, `visitDate`, `diagnosis`, `prescription` |
-| Patient → Notification/others | `MedicalRecordCreated` | `recordId`, `appointmentId`, `patientId`, `patientName`, `doctorId`, `doctorName`, `visitDate`, `phone`, `email` |
+| Patient → Notification/others | `MedicalRecordCreated` | `recordId`, `appointmentId`, `patientId`, `patientName`, `doctorId`, `doctorName`, `visitDate`, `phone`, `patientEmail` |
+
+All routing keys equal the PascalCase `eventType`: `PatientRegistered`,
+`AppointmentRequested`, `SlotReserved`, `SlotRejected`, `AppointmentConfirmed`,
+`AppointmentRejected`, `AppointmentCompleted`, and `MedicalRecordCreated`.
 
 The Appointment team must include **all** fields above, including both names and clinical fields. A blank prescription is invalid; use an explicit value such as `None` for a visit without medication. Clinical strings must be nonblank and at most 10,000 bytes each. Unknown event fields are tolerated for forward compatibility. Incoming timestamps and visits may be at most five minutes in the future; absent/invalid timestamps are rejected. Incoming payload limit is 1 MiB.
 

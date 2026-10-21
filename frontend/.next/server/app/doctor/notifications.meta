@@ -1,0 +1,39 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/doctor/layout,_N_T_/doctor/notifications/layout,_N_T_/doctor/notifications/page,_N_T_/doctor/notifications"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/doctor/notifications/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/3adb24c2ba43ee2224976a28b8c0e3b1b8cc80c4aee1fadaea2529373f3dea96/$/doctor/notifications",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/doctor/notifications/page"
+    },
+    "isFallback": false
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/doctor/layout,_N_T_/doctor/appointments/layout,_N_T_/doctor/appointments/page,_N_T_/doctor/appointments"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/doctor/appointments/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/b3209e89659e08a1be86dc955b1746ee90a1d4c71499b5382451a1d4f9b8dea8/$/doctor/appointments",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/doctor/appointments/page"
+    },
+    "isFallback": false
+  }
+}

@@ -6,6 +6,6 @@
     "patientId": "51478d15-98d4-4ea3-ad53-58a12e8b98aa",
     "patientName": "Example Patient",
     "phone": "+97500000000",
-    "email": "example@example.com"
+    "patientEmail": "example@example.com"
   }
 }

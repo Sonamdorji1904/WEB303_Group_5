@@ -1,0 +1,16 @@
+{
+  "eventId": "00000000-0000-0000-0000-000000000101",
+  "eventType": "AppointmentRequested",
+  "timestamp": "2026-10-20T10:00:00Z",
+  "data": {
+    "appointmentId": "00000000-0000-0000-0000-000000000102",
+    "patientId": "00000000-0000-0000-0000-000000000103",
+    "patientName": "Sample Patient",
+    "patientEmail": "sample@example.com",
+    "doctorId": "00000000-0000-0000-0000-000000000104",
+    "doctorName": "Sample Doctor",
+    "date": "2026-11-01",
+    "time": "09:30",
+    "reason": "Routine checkup"
+  }
+}

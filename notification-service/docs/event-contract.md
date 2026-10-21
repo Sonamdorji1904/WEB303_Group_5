@@ -41,18 +41,18 @@ consumers being online (durable queues hold the message).
 
 | eventType | Routing key | Publisher | Consumers |
 |---|---|---|---|
-| PatientRegistered | `patient.registered` | Patient | Notification |
-| AppointmentRequested | `appointment.requested` | Appointment | Doctor, Notification |
-| SlotReserved | `slot.reserved` | Doctor | Appointment |
-| SlotRejected | `slot.rejected` | Doctor | Appointment |
-| AppointmentConfirmed | `appointment.confirmed` | Appointment | Notification |
-| **AppointmentRejected** (proposed) | `appointment.rejected` | Appointment | Notification |
-| AppointmentCompleted | `appointment.completed` | Appointment | Patient, Notification |
-| MedicalRecordCreated | `medical_record.created` | Patient | Notification |
+| PatientRegistered | `PatientRegistered` | Patient | Notification |
+| AppointmentRequested | `AppointmentRequested` | Appointment | Doctor, Notification |
+| SlotReserved | `SlotReserved` | Doctor | Appointment |
+| SlotRejected | `SlotRejected` | Doctor | Appointment |
+| AppointmentConfirmed | `AppointmentConfirmed` | Appointment | Notification |
+| AppointmentRejected | `AppointmentRejected` | Appointment | Notification |
+| AppointmentCompleted | `AppointmentCompleted` | Appointment | Patient, Notification |
+| MedicalRecordCreated | `MedicalRecordCreated` | Patient | Notification |
 
-Notification Service binds: `patient.registered`, `appointment.requested`,
-`appointment.confirmed`, `appointment.rejected`, `appointment.completed`,
-`medical_record.created`. It does not consume `slot.reserved` / `slot.rejected`.
+Notification Service binds: `PatientRegistered`, `AppointmentRequested`,
+`AppointmentConfirmed`, `AppointmentRejected`, `AppointmentCompleted`,
+`MedicalRecordCreated`. It does not consume `SlotReserved` / `SlotRejected`.
 
 ## `data` fields the Notification Service needs
 
@@ -76,13 +76,6 @@ Notification Service binds: `patient.registered`, `appointment.requested`,
 Notification text never includes diagnosis or prescription; medical details stay in the
 Patient & Records Service.
 
-## Decision needed from the team
-
-1. **Rejected appointments.** The plan stops at `SlotRejected -> status REJECTED`, so the
-   patient never hears about it. Proposal: Appointment Service also publishes
-   `AppointmentRejected` (fields above) after it sets REJECTED. The Notification Service
-   already handles it.
-2. **Routing keys** above are my proposal (the plan only named event types). If you use
-   different keys, tell me; it is a one-line change in `internal/events/events.go`.
-3. **Doctor email** is optional; if Appointment has it, include `doctorEmail` in
-   `AppointmentConfirmed`.
+`AppointmentRejected` is supported and contains `appointmentId`, `patientId`,
+`patientName`, `patientEmail`, `doctorName`, `date`, `time`, and `reason`.
+Patient events use `patientEmail` consistently; `email` is not an event field.

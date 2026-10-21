@@ -1,0 +1,39 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/patient/layout,_N_T_/patient/doctors/layout,_N_T_/patient/doctors/page,_N_T_/patient/doctors"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/patient/doctors/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 64,
+    "slots": {
+      "children": {
+        "hints": 96,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/a7d98bd120a47aa8832131cef374b1a47791f0c91136534555110ca29270d82c/$/patient/doctors",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/patient/doctors/page"
+    },
+    "isFallback": false
+  }
+}

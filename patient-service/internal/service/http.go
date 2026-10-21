@@ -65,7 +65,7 @@ func pagination(r *http.Request) (int, int, error) {
 	}
 	return limit, offset, nil
 }
-func (s *Store) Handler() http.Handler {
+func (s *Store) Handler(cors ...string) http.Handler {
 	m := http.NewServeMux()
 	m.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
@@ -144,7 +144,7 @@ func (s *Store) Handler() http.Handler {
 		result(w, 200, v, e)
 	})
 	// Match before ServeMux to keep 404 and 405 responses in the JSON error format.
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, pattern := m.Handler(r)
 		if pattern == "" {
 			if r.Method != "GET" {
@@ -169,6 +169,24 @@ func (s *Store) Handler() http.Handler {
 		ctx, cancel := context.WithTimeout(r.Context(), 10*time.Second)
 		defer cancel()
 		m.ServeHTTP(w, r.WithContext(ctx))
+	})
+	origin := "*"
+	if len(cors) > 0 && cors[0] != "" {
+		origin = cors[0]
+	}
+	return withCORS(origin, handler)
+}
+
+func withCORS(origin string, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
 	})
 }
 func validPatientPath(p string) bool {

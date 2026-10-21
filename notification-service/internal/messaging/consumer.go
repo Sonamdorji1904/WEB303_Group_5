@@ -16,6 +16,7 @@ package messaging
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -132,7 +133,9 @@ func (c *Consumer) session(ctx context.Context) (started bool, err error) {
 			if !ok {
 				return true, errors.New("delivery channel closed")
 			}
-			c.process(ctx, ch, d)
+			if err := c.process(ctx, ch, d); err != nil {
+				return true, fmt.Errorf("process delivery: %w", err)
+			}
 		}
 	}
 }
@@ -162,38 +165,60 @@ func (c *Consumer) declare(ch *amqp.Channel) error {
 	return err
 }
 
-func (c *Consumer) process(ctx context.Context, ch *amqp.Channel, d amqp.Delivery) {
+func (c *Consumer) process(ctx context.Context, ch *amqp.Channel, d amqp.Delivery) error {
 	hctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
+	eventID := eventID(d.Body)
 
 	err := c.safeHandle(hctx, d.Body)
 	if err == nil {
-		_ = d.Ack(false)
-		return
+		if ackErr := d.Ack(false); ackErr != nil {
+			slog.Error("ack failed", "error", ackErr, "eventId", eventID, "messageId", d.MessageId)
+			return ackErr
+		}
+		slog.Info("event consumed", "eventId", eventID, "messageId", d.MessageId)
+		return nil
 	}
 
 	retries := retryCount(d.Headers)
 	var moveErr error
 	switch {
 	case errors.Is(err, ErrPermanent):
-		slog.Error("permanent failure; sending to DLQ", "error", err, "queue", c.dlq(), "messageId", d.MessageId)
+		slog.Error("permanent failure; sending to DLQ", "error", err, "queue", c.dlq(), "eventId", eventID, "messageId", d.MessageId)
 		moveErr = c.republish(hctx, ch, d, c.dlq(), retries, err, 0)
 	case retries >= c.cfg.MaxRetries:
-		slog.Error("retries exhausted; sending to DLQ", "error", err, "retries", retries, "queue", c.dlq(), "messageId", d.MessageId)
+		slog.Error("retries exhausted; sending to DLQ", "error", err, "retries", retries, "queue", c.dlq(), "eventId", eventID, "messageId", d.MessageId)
 		moveErr = c.republish(hctx, ch, d, c.dlq(), retries, err, 0)
 	default:
 		slog.Warn("processing failed; scheduling retry", "error", err,
-			"attempt", retries+1, "maxRetries", c.cfg.MaxRetries, "delay", c.cfg.RetryDelay.String())
+			"attempt", retries+1, "maxRetries", c.cfg.MaxRetries, "delay", c.cfg.RetryDelay.String(), "eventId", eventID)
 		moveErr = c.republish(hctx, ch, d, c.retryQ(), retries+1, err, c.cfg.RetryDelay)
 	}
 
 	if moveErr != nil {
 		// Could not park the message: put it back so it is not lost.
-		slog.Error("could not move message; requeueing", "error", moveErr)
-		_ = d.Nack(false, true)
-		return
+		slog.Error("could not move message; requeueing", "error", moveErr, "eventId", eventID)
+		if nackErr := d.Nack(false, true); nackErr != nil {
+			return fmt.Errorf("nack after move failure: %w", nackErr)
+		}
+		return nil
 	}
-	_ = d.Ack(false)
+	if ackErr := d.Ack(false); ackErr != nil {
+		slog.Error("ack failed after moving message", "error", ackErr, "eventId", eventID, "messageId", d.MessageId)
+		return ackErr
+	}
+	slog.Info("event moved", "eventId", eventID, "destination", "retry_or_dlq")
+	return nil
+}
+
+func eventID(body []byte) string {
+	var envelope struct {
+		EventID string `json:"eventId"`
+	}
+	if json.Unmarshal(body, &envelope) != nil {
+		return ""
+	}
+	return envelope.EventID
 }
 
 func (c *Consumer) safeHandle(ctx context.Context, body []byte) (err error) {

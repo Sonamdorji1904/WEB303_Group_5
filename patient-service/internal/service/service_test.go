@@ -184,7 +184,7 @@ func TestAppointmentIdempotencyAndLookup(t *testing.T) {
 	_ = json.Unmarshal(payload, &out)
 	var data map[string]any
 	_ = json.Unmarshal(out.Data, &data)
-	if data["phone"] != p.Phone || data["email"] != p.Email || data["recordId"] != r.ID {
+	if data["phone"] != p.Phone || data["patientEmail"] != p.Email || data["recordId"] != r.ID {
 		t.Fatal("missing notification contract fields")
 	}
 	if _, ok := data["diagnosis"]; ok {

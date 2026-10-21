@@ -1,0 +1,247 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - hospital-rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - hospital
+
+  patient-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: patient
+      POSTGRES_PASSWORD: ${PATIENT_DB_PASSWORD:-patient_local}
+      POSTGRES_DB: patient_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - patient-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U patient -d patient_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      - hospital
+
+  patient-migrate:
+    image: postgres:17-alpine
+    environment:
+      PGPASSWORD: ${PATIENT_DB_PASSWORD:-patient_local}
+    volumes:
+      - ./patient-service/migrations:/migrations:ro
+    entrypoint: ["psql", "-h", "patient-db", "-U", "patient", "-d", "patient_db", "-v", "ON_ERROR_STOP=1", "--single-transaction", "-f", "/migrations/001_init.sql"]
+    depends_on:
+      patient-db:
+        condition: service_healthy
+    networks:
+      - hospital
+
+  notification-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: notification
+      POSTGRES_PASSWORD: notification
+      POSTGRES_DB: notification_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - notification-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notification -d notification_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks:
+      - hospital
+
+  doctor-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: doctor
+      POSTGRES_PASSWORD: doctor
+      POSTGRES_DB: doctor_db
+    ports:
+      - "5434:5432"
+    volumes:
+      - doctor-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U doctor -d doctor_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      - hospital
+
+  doctor-migrate:
+    image: postgres:17-alpine
+    environment:
+      PGPASSWORD: doctor
+    volumes:
+      - ./doctor-service/migrations:/migrations:ro
+    entrypoint: ["psql", "-h", "doctor-db", "-U", "doctor", "-d", "doctor_db", "-v", "ON_ERROR_STOP=1", "--single-transaction", "-f", "/migrations/001_init.sql"]
+    depends_on:
+      doctor-db:
+        condition: service_healthy
+    networks:
+      - hospital
+
+  appointment-db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: appointment
+      POSTGRES_PASSWORD: appointment
+      POSTGRES_DB: appointment_db
+    ports:
+      - "5436:5432"
+    volumes:
+      - appointment-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appointment -d appointment_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      - hospital
+
+  appointment-migrate:
+    image: postgres:17-alpine
+    environment:
+      PGPASSWORD: appointment
+    volumes:
+      - ./appointment-service/migrations:/migrations:ro
+    entrypoint: ["psql", "-h", "appointment-db", "-U", "appointment", "-d", "appointment_db", "-v", "ON_ERROR_STOP=1", "--single-transaction", "-f", "/migrations/001_init.sql"]
+    depends_on:
+      appointment-db:
+        condition: service_healthy
+    networks:
+      - hospital
+
+  patient-service:
+    build:
+      context: ./patient-service
+    environment:
+      DATABASE_URL: postgres://patient:${PATIENT_DB_PASSWORD:-patient_local}@patient-db:5432/patient_db?sslmode=disable
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      HTTP_ADDR: :8081
+      CORS_ORIGIN: http://localhost:3000
+    ports:
+      - "8081:8081"
+    depends_on:
+      patient-migrate:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    stop_grace_period: 30s
+    networks:
+      - hospital
+
+  notification-service:
+    build:
+      context: ./notification-service
+    environment:
+      PORT: "8084"
+      DATABASE_URL: postgres://notification:notification@notification-db:5432/notification_db?sslmode=disable
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      RABBITMQ_EXCHANGE: hospital.events
+      RABBITMQ_QUEUE: notification-service.queue
+      MAX_RETRIES: "3"
+      RETRY_DELAY_SECONDS: "5"
+      PREFETCH: "5"
+      CORS_ORIGIN: "*"
+    ports:
+      - "8084:8084"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      notification-db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - hospital
+
+  doctor-service:
+    build:
+      context: ./doctor-service
+    environment:
+      PORT: "8082"
+      DATABASE_URL: postgres://doctor:doctor@doctor-db:5432/doctor_db?sslmode=disable
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      CORS_ORIGIN: "*"
+    ports:
+      - "8082:8082"
+    depends_on:
+      doctor-migrate:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - hospital
+
+  appointment-service:
+    build:
+      context: ./appointment-service
+    environment:
+      PORT: "8083"
+      DATABASE_URL: postgres://appointment:appointment@appointment-db:5432/appointment_db?sslmode=disable
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      CORS_ORIGIN: "*"
+    ports:
+      - "8083:8083"
+    depends_on:
+      appointment-migrate:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - hospital
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_PATIENT_URL: http://localhost:8081
+        NEXT_PUBLIC_DOCTOR_URL: http://localhost:8082
+        NEXT_PUBLIC_APPOINTMENT_URL: http://localhost:8083
+        NEXT_PUBLIC_NOTIFICATION_URL: http://localhost:8084
+    ports:
+      - "3000:3000"
+    depends_on:
+      patient-service:
+        condition: service_started
+      doctor-service:
+        condition: service_started
+      appointment-service:
+        condition: service_started
+      notification-service:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - hospital
+
+volumes:
+  hospital-rabbitmq-data:
+  patient-data:
+  notification-db-data:
+  doctor-data:
+  appointment-data:
+
+networks:
+  hospital:
+    driver: bridge

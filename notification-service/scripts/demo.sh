@@ -35,22 +35,22 @@ APPT='"appointmentId":"a-1","doctorId":"d-1","doctorName":"Karma Wangchuk","doct
 
 case "${1:-}" in
   happy)
-    echo "1. PatientRegistered";        event patient.registered PatientRegistered "{$PATIENT}"
-    echo "2. AppointmentRequested";     event appointment.requested AppointmentRequested "{$PATIENT,$APPT}"
-    echo "3. AppointmentConfirmed";     event appointment.confirmed AppointmentConfirmed "{$PATIENT,$APPT}"
-    echo "4. AppointmentCompleted";     event appointment.completed AppointmentCompleted "{$PATIENT,$APPT,\"diagnosis\":\"Influenza\",\"prescription\":\"Rest and fluids\"}"
-    echo "5. MedicalRecordCreated";     event medical_record.created MedicalRecordCreated "{\"recordId\":\"r-1\",$PATIENT,\"appointmentId\":\"a-1\",\"doctorName\":\"Karma Wangchuk\"}"
+    echo "1. PatientRegistered"; event PatientRegistered PatientRegistered "{$PATIENT}"
+    echo "2. AppointmentRequested"; event AppointmentRequested AppointmentRequested "{$PATIENT,$APPT}"
+    echo "3. AppointmentConfirmed"; event AppointmentConfirmed AppointmentConfirmed "{$PATIENT,$APPT}"
+    echo "4. AppointmentCompleted"; event AppointmentCompleted AppointmentCompleted "{$PATIENT,$APPT,\"diagnosis\":\"Influenza\",\"prescription\":\"Rest and fluids\"}"
+    echo "5. MedicalRecordCreated"; event MedicalRecordCreated MedicalRecordCreated "{\"recordId\":\"r-1\",$PATIENT,\"appointmentId\":\"a-1\",\"doctorName\":\"Karma Wangchuk\"}"
     ;;
   duplicate)
     id=$(uuid)
     echo "Publishing eventId $id three times"
-    for _ in 1 2 3; do event patient.registered PatientRegistered "{$PATIENT}" "$id"; done
+    for _ in 1 2 3; do event PatientRegistered PatientRegistered "{$PATIENT}" "$id"; done
     echo "Expect exactly ONE welcome notification for this event."
     ;;
   poison)
-    echo "Malformed JSON";   publish appointment.confirmed '{this is not json'
-    echo "Unknown type";     event appointment.confirmed SomethingUnknown '{}'
-    echo "Missing fields";   event patient.registered PatientRegistered '{"patientId":"p-9"}'
+    echo "Malformed JSON";   publish AppointmentConfirmed '{this is not json'
+    echo "Unknown type"; event AppointmentConfirmed SomethingUnknown '{}'
+    echo "Missing fields"; event PatientRegistered PatientRegistered '{"patientId":"p-9"}'
     echo "Expect all three in notification-service.dlq (management UI -> Queues)."
     ;;
   show)

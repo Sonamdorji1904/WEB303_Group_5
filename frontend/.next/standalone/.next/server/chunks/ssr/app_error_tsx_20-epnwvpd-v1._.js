@@ -1,0 +1,3 @@
+module.exports=[78141,a=>{"use strict";var b=a.i(87924);a.s(["default",0,function({reset:a}){return(0,b.jsxs)("div",{className:"card mx-auto mt-12 max-w-lg p-8 text-center",children:[(0,b.jsx)("h2",{className:"text-xl font-bold",children:"Something went wrong"}),(0,b.jsx)("p",{className:"mt-2 text-sm text-slate-500",children:"Please try the page again."}),(0,b.jsx)("button",{className:"btn-primary mt-5",onClick:a,children:"Try again"})]})}])}];
+
+//# sourceMappingURL=app_error_tsx_20-epnwvpd-v1._.js.map

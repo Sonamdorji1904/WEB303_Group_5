@@ -109,9 +109,16 @@ func (b *Broker) publish(ctx context.Context, exchange, key string, msg amqp.Pub
 func (b *Broker) Publish(ctx context.Context, e Event) error {
 	body, err := json.Marshal(e)
 	if err != nil {
+		slog.Error("event publish failed", "eventId", e.EventID, "eventType", e.EventType, "error", err)
 		return err
 	}
-	return b.publish(ctx, Exchange, e.EventType, amqp.Publishing{ContentType: "application/json", DeliveryMode: amqp.Persistent, MessageId: e.EventID, Type: e.EventType, Timestamp: e.Timestamp, Body: body})
+	err = b.publish(ctx, Exchange, e.EventType, amqp.Publishing{ContentType: "application/json", DeliveryMode: amqp.Persistent, MessageId: e.EventID, Type: e.EventType, Timestamp: e.Timestamp, Body: body})
+	if err != nil {
+		slog.Error("event publish failed", "eventId", e.EventID, "eventType", e.EventType, "error", err)
+		return err
+	}
+	slog.Info("event published", "eventId", e.EventID, "eventType", e.EventType)
+	return nil
 }
 func retryCount(h amqp.Table) int {
 	switch v := h["x-patient-retries"].(type) {
@@ -164,14 +171,19 @@ func (b *Broker) Consume(ctx context.Context, s *Store) error {
 				if err = d.Ack(false); err != nil {
 					return err
 				}
+				var event Event
+				_ = json.Unmarshal(d.Body, &event)
+				slog.Info("event consumed", "eventId", event.EventID, "eventType", event.EventType)
 				continue
 			}
 			n := retryCount(d.Headers)
+			var event Event
+			_ = json.Unmarshal(d.Body, &event)
 			if !Retryable(processErr) || n >= MaxRetries {
 				if err = d.Reject(false); err != nil {
 					return err
 				}
-				slog.Warn("appointment delivery dead-lettered", "reason", failureClass(processErr), "retry", n)
+				slog.Warn("appointment delivery dead-lettered", "eventId", event.EventID, "eventType", event.EventType, "reason", failureClass(processErr), "retry", n)
 				continue
 			}
 			headers := amqp.Table{"x-patient-retries": int32(n + 1)}
@@ -179,11 +191,13 @@ func (b *Broker) Consume(ctx context.Context, s *Store) error {
 			err = b.publish(op, "", RetryQueue, amqp.Publishing{Headers: headers, ContentType: "application/json", DeliveryMode: amqp.Persistent, MessageId: d.MessageId, Type: d.Type, Timestamp: d.Timestamp, Body: d.Body})
 			cancel()
 			if err != nil {
+				slog.Error("appointment delivery retry publish failed", "eventId", event.EventID, "eventType", event.EventType, "error", err, "retry", n+1)
 				return err
 			} // Connection closes, returning the unacknowledged original to its queue.
 			if err = d.Ack(false); err != nil {
 				return err
 			}
+			slog.Warn("appointment delivery retry scheduled", "eventId", event.EventID, "eventType", event.EventType, "retry", n+1)
 		}
 	}
 }

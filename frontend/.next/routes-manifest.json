@@ -1,0 +1,177 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admin",
+      "regex": "^/admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin(?:/)?$"
+    },
+    {
+      "page": "/admin/appointments",
+      "regex": "^/admin/appointments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/appointments(?:/)?$"
+    },
+    {
+      "page": "/admin/doctors",
+      "regex": "^/admin/doctors(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/doctors(?:/)?$"
+    },
+    {
+      "page": "/admin/notifications",
+      "regex": "^/admin/notifications(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/notifications(?:/)?$"
+    },
+    {
+      "page": "/admin/patients",
+      "regex": "^/admin/patients(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/patients(?:/)?$"
+    },
+    {
+      "page": "/appointments",
+      "regex": "^/appointments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/appointments(?:/)?$"
+    },
+    {
+      "page": "/doctor/appointments",
+      "regex": "^/doctor/appointments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/doctor/appointments(?:/)?$"
+    },
+    {
+      "page": "/doctor/notifications",
+      "regex": "^/doctor/notifications(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/doctor/notifications(?:/)?$"
+    },
+    {
+      "page": "/doctor/requests",
+      "regex": "^/doctor/requests(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/doctor/requests(?:/)?$"
+    },
+    {
+      "page": "/doctor/schedule",
+      "regex": "^/doctor/schedule(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/doctor/schedule(?:/)?$"
+    },
+    {
+      "page": "/doctors",
+      "regex": "^/doctors(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/doctors(?:/)?$"
+    },
+    {
+      "page": "/notifications",
+      "regex": "^/notifications(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/notifications(?:/)?$"
+    },
+    {
+      "page": "/patient/appointments",
+      "regex": "^/patient/appointments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/patient/appointments(?:/)?$"
+    },
+    {
+      "page": "/patient/book",
+      "regex": "^/patient/book(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/patient/book(?:/)?$"
+    },
+    {
+      "page": "/patient/doctors",
+      "regex": "^/patient/doctors(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/patient/doctors(?:/)?$"
+    },
+    {
+      "page": "/patient/notifications",
+      "regex": "^/patient/notifications(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/patient/notifications(?:/)?$"
+    },
+    {
+      "page": "/patient/records",
+      "regex": "^/patient/records(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/patient/records(?:/)?$"
+    },
+    {
+      "page": "/patients",
+      "regex": "^/patients(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/patients(?:/)?$"
+    },
+    {
+      "page": "/requests",
+      "regex": "^/requests(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/requests(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

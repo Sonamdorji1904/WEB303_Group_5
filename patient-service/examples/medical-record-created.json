@@ -11,6 +11,6 @@
     "doctorName": "Example Doctor",
     "visitDate": "2026-10-19T10:00:00Z",
     "phone": "+97500000000",
-    "email": "example@example.com"
+    "patientEmail": "example@example.com"
   }
 }
